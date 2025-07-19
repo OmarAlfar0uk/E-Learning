@@ -1,35 +1,67 @@
+using AutoMapper;
+using Domain.Contract;
+using Domain.Models.IdentityModel;
+using E_Learning.Extensions;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Persistence;
+using Persistence.Data;
+using Persistence.Identity;
+using Persistence.Repositorice;
+using Services;
+using Services.MappingProfil;
+using ServicesAbstraction;
+using Store.Web.Extensions;
+using System;
+using System.Reflection.Metadata;
 
 namespace E_Learning
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            #region services to the container.
+
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerServices();
+            builder.Services.AddInfrastructureServices(builder.Configuration);
+            builder.Services.AddWebApplicationServices();
+            builder.Services.AddJWTService(builder.Configuration);
+
+           
+         
+
+            #endregion
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            #region configure http request
+            app.SeedDataBaseAsync();
+
+            app.UseCustomExceptionMiddelWare();
+        
+
+
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerMiddleWear();
             }
 
             app.UseHttpsRedirection();
-
+            app.UseStaticFiles();
+            app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
 
 
             app.MapControllers();
-
+            #endregion
             app.Run();
         }
     }
