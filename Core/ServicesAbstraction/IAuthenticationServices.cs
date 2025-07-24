@@ -18,5 +18,10 @@ namespace ServicesAbstraction
 
         Task<UserDto> GetCreanteUserAsync(string email);
 
+        Task ForgotPasswordAsync(string email, string clientAppUrl);
+
+        Task ResetPasswordAsync(string email, string token, string newPassword);
+
+
     }
 }
