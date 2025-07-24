@@ -13,6 +13,7 @@ using Persistence.Repositorice;
 using Services;
 using Services.MappingProfil;
 using ServicesAbstraction;
+using Share.Settings;
 using Store.Web.Extensions;
 using System;
 using System.Reflection.Metadata;
@@ -31,11 +32,22 @@ namespace E_Learning
             builder.Services.AddControllers();
             builder.Services.AddSwaggerServices();
             builder.Services.AddInfrastructureServices(builder.Configuration);
+            builder.Services.AddAplicationServices(builder.Configuration);
             builder.Services.AddWebApplicationServices();
             builder.Services.AddJWTService(builder.Configuration);
+            
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
+                });
+            });
 
-           
-         
+
+
 
             #endregion
 
@@ -56,6 +68,7 @@ namespace E_Learning
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
+            app.UseCors("AllowAll");
             app.UseAuthentication();
             app.UseAuthorization();
 

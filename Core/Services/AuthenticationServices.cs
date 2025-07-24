@@ -5,13 +5,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using ServicesAbstraction;
 using Share.DataTransferObject.IdentityDTOs;
+using Share.Settings;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
 namespace Services
 {
-    public class AuthenticationServices(UserManager<AppUsers> _userManager, IConfiguration _configuration) : IAuthenticationServices
+    public class AuthenticationServices(UserManager<AppUsers> _userManager, IConfiguration _configuration, IMailServices _mailService) : IAuthenticationServices
     {
 
         public async Task<UserDto> LoginAsync(LoginDto loginDto)
@@ -88,11 +89,49 @@ namespace Services
             return User is not null;
         }
 
-        public async Task<UserDto> GetCreanteUserAsync(string email)
+        public async Task<UserDto?> GetCreanteUserAsync(string email)
         {
-            var User = await _userManager.FindByEmailAsync(email) ?? throw new UserNotFoundException(email);
-            return new UserDto() { DisplayName = User.DisplayName, Email = User.Email, Token = await CreateTokenAsync(User) };
+            var User = await _userManager.FindByEmailAsync(email);
+            if (User == null) return null;
 
+            return new UserDto()
+            {
+                DisplayName = User.DisplayName,
+                Email = User.Email,
+                Token = await CreateTokenAsync(User)
+            };
         }
+
+        public async Task ForgotPasswordAsync(string email, string clientAppUrl)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                throw new Exception("User not found");
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var resetLink = $"{clientAppUrl}/reset-password?email={email}&token={Uri.EscapeDataString(token)}";
+
+            await _mailService.SendEmailAsync(new Email
+            {
+                To = email,
+                subject = "Reset Your Password",
+                Body = $"Click the link to reset your password: {resetLink}"
+            });
+        }
+
+        public async Task ResetPasswordAsync(string email, string token, string newPassword)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                throw new Exception("User not found");
+
+            var resetResult = await _userManager.ResetPasswordAsync(user, token, newPassword);
+            if (!resetResult.Succeeded)
+            {
+                var errors = string.Join(", ", resetResult.Errors.Select(e => e.Description));
+                throw new Exception($"Reset failed: {errors}");
+            }
+        }
+
     }
 }
