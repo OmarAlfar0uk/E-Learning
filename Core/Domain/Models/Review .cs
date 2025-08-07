@@ -15,7 +15,8 @@ namespace Domain.Models
 
         public int CourseId { get; set; }
         public Course Course { get; set; } = null!;
-
+        public bool IsReported { get; set; }
+        public string? ReportReason { get; set; }
         public string AppUserId { get; set; }
         public AppUsers AppUser { get; set; } = null!;
 

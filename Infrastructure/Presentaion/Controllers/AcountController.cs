@@ -97,7 +97,7 @@ namespace Presentaion.Controllers
 
 
         [HttpPost("forgot-password")]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto model)
+        public async Task<ActionResult> ForgotPassword(ForgotPasswordDto model)
         {
             try
             {
@@ -112,7 +112,7 @@ namespace Presentaion.Controllers
 
 
         [HttpPost("reset-password")]
-        public async Task<IActionResult> ResetPassword(ResetPasswordDto model)
+        public async Task<ActionResult> ResetPassword(ResetPasswordDto model)
         {
             try
             {

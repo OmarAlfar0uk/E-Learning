@@ -15,10 +15,15 @@ namespace Services.MappingProfil
         public CourseProfile()
         {
             CreateMap<Course, CourseDto>()
-               .ForMember(dest => dest.TypeName, opt => opt.MapFrom(src => src.CourseType.Name))
-               .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name))
-               .ForMember(dist => dist.PictureUrl, opt => opt.MapFrom<PictureUrlResolver>())
-               .ForMember(dist => dist.PromoVideoUrl, opt => opt.MapFrom<PromoVideoUrlResolver>());
+                .ForMember(dest => dest.TypeName, opt => opt.MapFrom(src => src.CourseType.Name))
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name))
+                .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<PictureUrlResolver>())
+                .ForMember(dest => dest.PromoVideoUrl, opt => opt.MapFrom<PromoVideoUrlResolver>());
+
+            
+            CreateMap<CourseDto, Course>()
+                .ForMember(dest => dest.PictureUrl, opt => opt.Ignore())
+                .ForMember(dest => dest.PromoVideoUrl, opt => opt.Ignore());
         }
     }
 }

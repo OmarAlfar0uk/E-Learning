@@ -23,6 +23,12 @@ namespace Persistence.Data.Configrations
                 .WithMany(m => m.Quizzes)
                 .HasForeignKey(q => q.ModuleId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+             builder.HasOne(q => q.CreatedBy)
+                .WithMany() 
+                .HasForeignKey(q => q.CreatedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }

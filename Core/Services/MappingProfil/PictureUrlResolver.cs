@@ -14,17 +14,22 @@ using System.Threading.Tasks;
 
 namespace Services.MappingProfil
 {
-    internal class PictureUrlResolver(IConfiguration _configuration) : IValueResolver<Course, CourseDto, string>
+    public class PictureUrlResolver : IValueResolver<Course, CourseDto, string>
     {
+        private readonly IConfiguration _configuration;
+
+        public PictureUrlResolver(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         public string Resolve(Course source, CourseDto destination, string destMember, ResolutionContext context)
         {
-            if(string.IsNullOrEmpty(source.PictureUrl))
+            if (string.IsNullOrEmpty(source.PictureUrl))
                 return string.Empty;
-            else
-            {
-                var Url = $"{_configuration.GetSection("Urls")["BaseUrl"]}";
-                    return Url;
-            }
+
+            var baseUrl = _configuration.GetSection("Urls")["CloudinaryBaseUrl"];
+            return $"{baseUrl}/{source.PictureUrl}"; 
         }
     }
 }

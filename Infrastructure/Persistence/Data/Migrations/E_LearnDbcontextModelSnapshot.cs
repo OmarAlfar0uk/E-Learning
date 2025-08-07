@@ -51,6 +51,9 @@ namespace Persistence.Data.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
@@ -62,6 +65,9 @@ namespace Persistence.Data.Migrations
                     b.Property<string>("InstructorId")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsPublished")
                         .ValueGeneratedOnAdd()
@@ -92,7 +98,6 @@ namespace Persistence.Data.Migrations
                         .HasColumnType("numeric(10,2)");
 
                     b.Property<string>("PromoVideoUrl")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
@@ -106,6 +111,9 @@ namespace Persistence.Data.Migrations
 
                     b.Property<int>("TypeId")
                         .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -144,11 +152,12 @@ namespace Persistence.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AppUserId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("AppUserId1")
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("CourseId")
                         .HasColumnType("integer");
@@ -163,9 +172,12 @@ namespace Persistence.Data.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
+                    b.Property<double>("ProgressPercentage")
+                        .HasColumnType("double precision");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId1");
+                    b.HasIndex("AppUserId");
 
                     b.HasIndex("CourseId");
 
@@ -299,10 +311,8 @@ namespace Persistence.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AppUserId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("AppUserId1")
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("CourseId")
@@ -319,7 +329,7 @@ namespace Persistence.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId1");
+                    b.HasIndex("AppUserId");
 
                     b.HasIndex("CourseId");
 
@@ -336,10 +346,11 @@ namespace Persistence.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CreatedById")
-                        .HasColumnType("integer");
+                    b.Property<string>("AppUsersId")
+                        .HasColumnType("text");
 
-                    b.Property<string>("CreatedById1")
+                    b.Property<string>("CreatedById")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("ModuleId")
@@ -352,7 +363,9 @@ namespace Persistence.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedById1");
+                    b.HasIndex("AppUsersId");
+
+                    b.HasIndex("CreatedById");
 
                     b.HasIndex("ModuleId");
 
@@ -415,10 +428,8 @@ namespace Persistence.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AppUserId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("AppUserId1")
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Comment")
@@ -434,12 +445,18 @@ namespace Persistence.Data.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
+                    b.Property<bool>("IsReported")
+                        .HasColumnType("boolean");
+
                     b.Property<int>("Rating")
                         .HasColumnType("integer");
 
+                    b.Property<string>("ReportReason")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId1");
+                    b.HasIndex("AppUserId");
 
                     b.HasIndex("CourseId");
 
@@ -477,7 +494,9 @@ namespace Persistence.Data.Migrations
                 {
                     b.HasOne("Domain.Models.IdentityModel.AppUsers", "AppUser")
                         .WithMany("Enrollments")
-                        .HasForeignKey("AppUserId1");
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Domain.Models.Course", "Course")
                         .WithMany("Enrollments")
@@ -524,7 +543,9 @@ namespace Persistence.Data.Migrations
                 {
                     b.HasOne("Domain.Models.IdentityModel.AppUsers", "AppUser")
                         .WithMany("Progresses")
-                        .HasForeignKey("AppUserId1");
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Domain.Models.Course", "Course")
                         .WithMany()
@@ -546,9 +567,15 @@ namespace Persistence.Data.Migrations
 
             modelBuilder.Entity("Domain.Models.Quiz", b =>
                 {
-                    b.HasOne("Domain.Models.IdentityModel.AppUsers", "CreatedBy")
+                    b.HasOne("Domain.Models.IdentityModel.AppUsers", null)
                         .WithMany("CreatedQuizzes")
-                        .HasForeignKey("CreatedById1");
+                        .HasForeignKey("AppUsersId");
+
+                    b.HasOne("Domain.Models.IdentityModel.AppUsers", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Domain.Models.Module", "Module")
                         .WithMany("Quizzes")
@@ -576,7 +603,9 @@ namespace Persistence.Data.Migrations
                 {
                     b.HasOne("Domain.Models.IdentityModel.AppUsers", "AppUser")
                         .WithMany("Reviews")
-                        .HasForeignKey("AppUserId1");
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Domain.Models.Course", "Course")
                         .WithMany("Reviews")

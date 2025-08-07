@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
+
 namespace Domain.Models
 {
     public class Course : BaseEntity<int>
@@ -16,9 +18,9 @@ namespace Domain.Models
 
         public string Title { get; set; } = null!;
 
-        public string PictureUrl { get; set; } = null!;
+        public string? PictureUrl { get; set; } = null!;
 
-        public string PromoVideoUrl { get; set; } = null!;
+        public string? PromoVideoUrl { get; set; } = null!;
 
         public decimal Price { get; set; }
 
@@ -32,7 +34,7 @@ namespace Domain.Models
 
         public string Language { get; set; } = null!;
 
-
+        public bool IsDeleted { get; set; } = false;
 
         #endregion
 
@@ -42,7 +44,8 @@ namespace Domain.Models
         public int TypeId { get; set; }
         public CourseType CourseType { get; set; } = null!;
 
-
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
         public int CategoryId { get; set; }
         public Category Category { get; set; } = null!;
 

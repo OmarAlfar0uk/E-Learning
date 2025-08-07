@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ServicesAbstraction;
+using Share;
 using Share.DataTransferObject;
 using System;
 using System.Collections.Generic;
@@ -12,45 +14,250 @@ namespace Presentaion.Controllers
     public class CourseController(IServiceManager _serviceManager) : BaseController
     {
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CourseDto>>> GetAllCouses()
+        public async Task<ActionResult<PaginatedResult<CourseDto>>> GetAllCourses([FromQuery]CourseQueryParams queryParams)
         {
-            var Products =await _serviceManager.CourseServices.GetAllCoursesAsync();    
-            return Ok(Products);    
-        }
-        [HttpGet ("{id:int}")]
-        public async Task<ActionResult> GetCouse(int id) 
-        {
-            var Product =await _serviceManager.CourseServices.GetCourseByIdAsync(id);
-            return Ok(Product);
+            try
+            {
+                var courses = await _serviceManager.CourseServices.GetAllCoursesAsync(queryParams);
+                return Ok(courses);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
-        [HttpGet("Types")]
-        public async Task<ActionResult<IEnumerable<TypeDto>>> GetAllType() 
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<CourseDto>> GetCourse(int id)
         {
-            var Types =await _serviceManager.CourseServices.GetAllTypeAsync();
-            return Ok(Types);
+            try
+            {
+                var course = await _serviceManager.CourseServices.GetCourseByIdAsync(id);
+                if (course == null)
+                {
+                    return NotFound("Course not found or deleted.");
+                }
+                return Ok(course);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpGet("types")]
+        public async Task<ActionResult<IEnumerable<TypeDto>>> GetAllTypes()
+        {
+            try
+            {
+                var types = await _serviceManager.CourseServices.GetAllTypeAsync();
+                return Ok(types);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         [HttpPost]
-        public async Task<ActionResult<CourseDto>> AddCourse(CourseDto course)
+        [Authorize]
+        public async Task<ActionResult<CourseDto>> AddCourse([FromForm] CourseDto courseDto)
         {
-            var Couse =await _serviceManager.CourseServices.AddCourseAsync(course);
-            return Ok(Couse);   
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                if (!User.Identity.IsAuthenticated)
+                {
+                    return Unauthorized("You must be logged in to create a course.");
+                }
+
+                var createdCourse = await _serviceManager.CourseServices.AddCourseAsync(courseDto);
+                return CreatedAtAction(nameof(GetCourse), new { id = createdCourse.Id }, createdCourse);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
-        [HttpPut]
-        public async Task<ActionResult<CourseDto>> UpdateCourse( int id, CourseDto course)
+        [HttpPut("{id:int}")]
+        [Authorize]
+        public async Task<ActionResult<CourseDto>> UpdateCourse(int id, [FromForm] CourseDto courseDto)
         {
-            var UpdateCourse =await _serviceManager.CourseServices.UpdateCourseAsync(id, course);    
-            return Ok(UpdateCourse);
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var isOwner = await _serviceManager.CourseServices.IsUserOwnerOfCourseAsync(id, User.Identity.Name);
+                if (!isOwner)
+                {
+                    return Unauthorized("You are not authorized to update this course.");
+                }
+
+                var updatedCourse = await _serviceManager.CourseServices.UpdateCourseAsync(id, courseDto);
+                if (updatedCourse == null)
+                {
+                    return NotFound("Course not found or deleted.");
+                }
+
+                return Ok(updatedCourse);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<bool>> DeleteCourse(int id) 
+        [HttpDelete("{id:int}")]
+        [Authorize]
+        public async Task<ActionResult<bool>> DeleteCourse(int id)
         {
-            var Delete =await _serviceManager.CourseServices.DeleteCourseAsync(id);
-            return Ok(Delete);
+            try
+            {
+                var isOwner = await _serviceManager.CourseServices.IsUserOwnerOfCourseAsync(id, User.Identity.Name);
+                if (!isOwner)
+                {
+                    return Unauthorized("You are not authorized to delete this course.");
+                }
+
+                var deleted = await _serviceManager.CourseServices.DeleteCourseAsync(id);
+                if (!deleted)
+                {
+                    return NotFound("Course not found or already deleted.");
+                }
+
+                return Ok(deleted);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
+
+        [HttpGet("top-rated")]
+        public async Task<ActionResult<IEnumerable<CourseDto>>> GetTopRatedCourses([FromQuery] int count = 10)
+        {
+            try
+            {
+                if (count <= 0)
+                {
+                    return BadRequest("Count must be greater than zero.");
+                }
+
+                var courses = await _serviceManager.CourseServices.GetTopRatedCoursesAsync(count);
+                return Ok(courses);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpGet("instructor")]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<CourseDto>>> GetCoursesByInstructor()
+        {
+            try
+            {
+                if (!User.Identity.IsAuthenticated)
+                {
+                    return Unauthorized("You must be logged in to view your courses.");
+                }
+
+                var courses = await _serviceManager.CourseServices.GetCoursesByUserAsync(User.Identity.Name);
+                return Ok(courses);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpGet("{id:int}/lessons")]
+        public async Task<ActionResult<IEnumerable<LessonDto>>> GetLessonsByCourseId(int id)
+        {
+            try
+            {
+                if (id <= 0)
+                {
+                    return BadRequest("Invalid course ID.");
+                }
+
+                var lessons = await _serviceManager.CourseServices.GetLessonsByCourseIdAsync(id);
+                return Ok(lessons);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpGet("{id:int}/is-owner")]
+        [Authorize]
+        public async Task<ActionResult<bool>> IsUserOwnerOfCourse(int id)
+        {
+            try
+            {
+                if (id <= 0)
+                {
+                    return BadRequest("Invalid course ID.");
+                }
+
+                if (!User.Identity.IsAuthenticated)
+                {
+                    return Unauthorized("You must be logged in to check course ownership.");
+                }
+
+                var isOwner = await _serviceManager.CourseServices.IsUserOwnerOfCourseAsync(id, User.Identity.Name);
+                return Ok(isOwner);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpGet("{id:int}/statistics")]
+        public async Task<ActionResult<CourseStatisticsDto>> GetCourseStatistics(int id)
+        {
+            try
+            {
+                if (id <= 0)
+                {
+                    return BadRequest("Invalid course ID.");
+                }
+
+                var statistics = await _serviceManager.CourseServices.GetCourseStatisticsAsync(id);
+                if (statistics == null)
+                {
+                    return NotFound("Course not found or deleted.");
+                }
+                return Ok(statistics);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 }

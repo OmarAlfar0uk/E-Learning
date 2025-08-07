@@ -13,7 +13,7 @@ namespace Domain.Models
         public int ModuleId { get; set; }
         public Module Module { get; set; } = null!;
 
-        public int CreatedById { get; set; }
+        public string CreatedById { get; set; }
         public AppUsers CreatedBy { get; set; } = null!;
 
         public ICollection<QuizQuestion> Questions { get; set; } = new List<QuizQuestion>();

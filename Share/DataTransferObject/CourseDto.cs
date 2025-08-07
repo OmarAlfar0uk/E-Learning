@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -17,9 +18,10 @@ namespace Share.DataTransferObject
 
         public string Title { get; set; } = default!;
 
-        public string PictureUrl { get; set; } = default!;
-
-        public string PromoVideoUrl { get; set; } = default!;
+        public IFormFile? PictureFile { get; set; } 
+        public string? PictureUrl { get; set; } 
+        public IFormFile? PromoVideoFile { get; set; } 
+        public string? PromoVideoUrl { get; set; }
 
         public decimal Price { get; set; }
 
