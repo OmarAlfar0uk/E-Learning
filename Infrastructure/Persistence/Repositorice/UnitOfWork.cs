@@ -23,7 +23,7 @@ namespace Persistence.Repositorice
             else
             {
                 var Repo = new GenericRepository<TEntity,TKey>(_dbcontext);
-                _repositories["typeName"] = Repo;
+                _repositories[typeName] = Repo;
                 return Repo;
             }
         }

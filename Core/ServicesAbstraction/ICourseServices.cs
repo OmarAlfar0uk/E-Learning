@@ -1,4 +1,5 @@
-﻿using Share.DataTransferObject;
+﻿using Share;
+using Share.DataTransferObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace ServicesAbstraction
 {
     public interface ICourseServices
     {
-        Task<IEnumerable<CourseDto>> GetAllCoursesAsync();
+        Task<PaginatedResult<CourseDto>> GetAllCoursesAsync(CourseQueryParams queryParams);
 
         Task<CourseDto> GetCourseByIdAsync(int Id);
 
@@ -19,5 +20,11 @@ namespace ServicesAbstraction
 
         Task<bool> DeleteCourseAsync(int id);
         Task<IEnumerable<TypeDto>> GetAllTypeAsync();
+
+        Task<IEnumerable<CourseDto>> GetTopRatedCoursesAsync(int count = 10);
+        Task<IEnumerable<CourseDto>> GetCoursesByUserAsync(string userId);
+        Task<IEnumerable<LessonDto>> GetLessonsByCourseIdAsync(int courseId);
+        Task<bool> IsUserOwnerOfCourseAsync(int courseId, string userId);
+        Task<CourseStatisticsDto> GetCourseStatisticsAsync(int courseId);
     }
 }
