@@ -35,6 +35,10 @@ namespace Services
                 var account = new Account(cloudSettings.CloudName, cloudSettings.ApiKey, cloudSettings.ApiSecret);
                 return new CloudinaryDotNet.Cloudinary(account);
             });
+
+            services.AddScoped<IOrederService, OrderService>();
+            services.AddScoped<Func<IOrederService>>(provider =>
+            () => provider.GetRequiredService<IOrederService>());
             services.AddScoped<IServiceManager, ServiceManager>();
             return services;
         }

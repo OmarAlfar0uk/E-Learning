@@ -13,7 +13,10 @@ namespace Persistence.Repositorice
         public static IQueryable<TEntity> CreateQurery<TEntity, TKey>(IQueryable<TEntity> InputQuery, ISpecification<TEntity, TKey> specifications) where TEntity : BaseEntity<TKey>
         {
             var Query = InputQuery;
-          
+            if (specifications.Criteria is not null)
+            {
+                Query = Query.Where(specifications.Criteria);
+            }
 
             if (specifications.OrderBy is not null)
             {
@@ -25,6 +28,10 @@ namespace Persistence.Repositorice
                 Query.OrderByDescending(specifications.OrderByDescending);
             }
 
+            if (specifications.IncludeExpressions is not null && specifications.IncludeExpressions.Count > 0)
+            {
+                Query = specifications.IncludeExpressions.Aggregate(Query, (CurrentQuery, IncludeExp) => CurrentQuery.Include(IncludeExp));
+            }
 
             if (specifications.IsPaginated)
             {

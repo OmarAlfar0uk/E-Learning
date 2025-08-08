@@ -13,10 +13,10 @@ public class CloudinaryService : ICloudinaryService
     public CloudinaryService(IConfiguration configuration)
     {
         var account = new Account(
-              configuration["Cloudinary:dgbqprk3l"],
-            configuration["Cloudinary:713688198668333"],
-            configuration["Cloudinary:vs3llz9Blp-o-a0DuoAD6JhkyRs"]);
-
+              configuration["CloudinarySettings:CloudName"],
+             configuration["CloudinarySettings:ApiKey"],
+                 configuration["CloudinarySettings:ApiSecret"]
+                 );
         _cloudinary = new Cloudinary(account);
     }
 

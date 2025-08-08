@@ -19,6 +19,8 @@ namespace ServicesAbstraction
         public IEnrollmentServices EnrollmentServices { get; }
         public IReviewServices ReviewServices { get; }
         public IAuthenticationServices AuthenticationServices { get; }
+        public IBasketService BasketService { get; }
+        public IOrederService OrederService { get; }
 
       
     }
