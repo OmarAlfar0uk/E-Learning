@@ -30,6 +30,7 @@ namespace Services
         private readonly Lazy<IBasketService> _LazeBasketService = new Lazy<IBasketService>(() => new BasketService(_basketRepository , _mapper));
         private readonly Lazy<IOrederService> _LazeOrderService = new Lazy<IOrederService>(() => new OrderService(_mapper,_basketRepository,_unitOfWork));
         private readonly Lazy<ICloudinaryService> _LazeCloudinaryService = new Lazy<ICloudinaryService>(() => new CloudinaryService(_configuration));
+        private readonly Lazy<IPaymentService> _LazePaymentService = new Lazy<IPaymentService>(() => new PaymentService(_configuration , _basketRepository , _unitOfWork , _mapper));
         public ICourseServices CourseServices => _LazeCourseServices.Value;
         public IModuleServices ModuleServices => _LazeModuleServices.Value;
         public ILessonServices LessonServices => _LazeLessonServices.Value;
@@ -43,6 +44,7 @@ namespace Services
         public IBasketService BasketService => _LazeBasketService.Value;
         public IOrederService OrederService => _LazeOrderService.Value;
         public ICloudinaryService CloudinaryService => _LazeCloudinaryService.Value;
+        public IPaymentService PaymentService => _LazePaymentService.Value;
 
       
     }

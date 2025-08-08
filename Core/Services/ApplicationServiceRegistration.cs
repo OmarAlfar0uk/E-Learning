@@ -40,6 +40,9 @@ namespace Services
             services.AddScoped<Func<IOrederService>>(provider =>
             () => provider.GetRequiredService<IOrederService>());
             services.AddScoped<IServiceManager, ServiceManager>();
+            services.AddScoped<ICacheService, CacheService>();
+            services.AddScoped<IPaymentService, PaymentService>();
+
             return services;
         }
     }

@@ -26,6 +26,7 @@ namespace Persistence
             Services.AddScoped<IDataSeeding, DataSeeding>();
             Services.AddScoped<IUnitOfWork, UnitOfWork>();
             Services.AddScoped<IBasketRepository, BasketRepository>();
+            Services.AddScoped<ICashingRepository, CashingRepository>();
             Services.AddSingleton<IConnectionMultiplexer>(  (_) =>
             {
                 return ConnectionMultiplexer.Connect(Configuration.GetConnectionString("RedisConnectionString"));
