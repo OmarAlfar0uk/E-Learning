@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Presentaion.Attribute;
 using ServicesAbstraction;
 using Share;
 using Share.DataTransferObject;
@@ -14,6 +15,7 @@ namespace Presentaion.Controllers
     public class CourseController(IServiceManager _serviceManager) : BaseController
     {
         [HttpGet]
+        [Cache]
         public async Task<ActionResult<PaginatedResult<CourseDto>>> GetAllCourses([FromQuery]CourseQueryParams queryParams)
         {
             try

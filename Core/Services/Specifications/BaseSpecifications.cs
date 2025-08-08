@@ -18,6 +18,14 @@ namespace Services.Specifications
 
         public Expression<Func<TEntity, bool>> Criteria { get; private set; }
 
+
+        public List<Expression<Func<TEntity, object>>> IncludeExpressions { get; } = [];
+
+
+
+        protected void AddInclode(Expression<Func<TEntity, object>> includeExpressions)
+         => IncludeExpressions.Add(includeExpressions);
+
         #region Sortion
         public Expression<Func<TEntity, object>> OrderBy  { get; private set; }
 

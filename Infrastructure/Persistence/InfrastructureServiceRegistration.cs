@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Services;
 using ServicesAbstraction;
+using StackExchange.Redis;
 using System.Text;
 
 namespace Persistence
@@ -24,7 +25,12 @@ namespace Persistence
 
             Services.AddScoped<IDataSeeding, DataSeeding>();
             Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+            Services.AddScoped<IBasketRepository, BasketRepository>();
+            Services.AddScoped<ICashingRepository, CashingRepository>();
+            Services.AddSingleton<IConnectionMultiplexer>(  (_) =>
+            {
+                return ConnectionMultiplexer.Connect(Configuration.GetConnectionString("RedisConnectionString"));
+            });
             Services.AddIdentityCore<AppUsers>()
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<E_LearnIdentityDbContext>();
