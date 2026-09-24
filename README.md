@@ -1,73 +1,43 @@
-<div align="center">
+# E-Learning API Scaffold
 
-# 🎓 E-Learning API
-### Lightweight ASP.NET Core Web API Starter for Online Learning Management
+![Language](https://img.shields.io/badge/Language-C%23-239120?style=for-the-badge&logo=c-sharp&logoColor=white)
+![Framework](https://img.shields.io/badge/Framework-ASP.NET%20Core%208-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
 
-[![.NET 8](https://img.shields.io/badge/.NET-8.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
-[![C#](https://img.shields.io/badge/C%23-12-239120?style=for-the-badge&logo=csharp&logoColor=white)](https://learn.microsoft.com/en-us/dotnet/csharp/)
-[![Web API](https://img.shields.io/badge/API-RESTful-blue?style=for-the-badge&logo=swagger&logoColor=white)](#-getting-started)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellowgreen?style=for-the-badge)](LICENSE)
-[![Author](https://img.shields.io/badge/Author-Omar%20Alfarouk-orange?style=for-the-badge&logo=github&logoColor=white)](https://github.com/OmarAlfar0uk)
+An initial project setup and scaffold for an ASP.NET Core 8 Web API, created as a starting template for an e-learning platform.
 
-<p align="center">
-  <a href="#-key-features">Key Features</a> •
-  <a href="#-tech-stack">Tech Stack</a> •
-  <a href="#-getting-started">Getting Started</a> •
-  <a href="#-author">Author</a>
-</p>
+*Note: This is currently an initial scaffold/starting point, not a completed feature set.*
 
-</div>
+## Features
+- Basic Web API structure
+- Swagger documentation integration
 
----
+## Tech Stack
+| Technology | Description |
+|---|---|
+| C# / ASP.NET Core 8 | Backend Framework |
+| Swashbuckle / Swagger | API Documentation |
 
-## 📌 Executive Overview
+## Getting Started
 
-**E-Learning** is a clean, modern ASP.NET Core Web API starter project designed to power educational platforms. Engineered for rapid prototyping and microservice extension, it provides essential scaffolding, OpenAPI/Swagger integration, and standardized dependency injection patterns.
-
----
-
-## ✨ Key Features
-
-- **🚀 Fast RESTful Routing:** Configured with modern ASP.NET Core controllers and routing attributes.
-- **📖 OpenAPI / Swagger Documentation:** Interactive API testing directly out-of-the-box.
-- **🛡️ Dependency Injection Architecture:** Clean dependency management and modular service registration.
-
----
-
-## ⚡ Tech Stack
-
-- **Framework:** .NET 8 / C# 12
-- **API Spec:** OpenAPI (Swagger)
-- **Runtime:** ASP.NET Core Web API
-
----
-
-## 🚀 Getting Started
-
-1. **Clone repository:**
+1. Clone the repository:
    ```bash
    git clone https://github.com/OmarAlfar0uk/E-Learning.git
-   cd E-Learning
    ```
-
-2. **Run Web API:**
+2. Restore dependencies:
    ```bash
-   dotnet run --project E-Learning/E-Learning.csproj
+   dotnet restore
    ```
+3. Run the application:
+   ```bash
+   dotnet run
+   ```
+*Swagger UI is accessible at `/swagger` when running.*
 
----
+## Project Structure
+- `WeatherForecastController.cs`: Default API controller scaffold
+- `Program.cs`: Application entry point and configuration
 
-## 👨‍💻 Author
-
-**Omar Alfarouk**  
-*Full-Stack .NET & Software Engineer*  
-
-- 🌐 **GitHub:** [@OmarAlfar0uk](https://github.com/OmarAlfar0uk)
-- 💼 **LinkedIn:** [omar-alfarouk](https://www.linkedin.com/in/omar-alfarouk-252471251/)
-- 📧 **Email:** [omaralfarouk646@gmail.com](mailto:omaralfarouk646@gmail.com)
-
----
-
-<div align="center">
-  <sub>Built with ❤️ by Omar Alfarouk. Licensed under the <a href="LICENSE">MIT License</a>.</sub>
-</div>
+## Author
+- GitHub: [OmarAlfar0uk](https://github.com/OmarAlfar0uk)
+- LinkedIn: [omar-alfarouk-252471251](https://www.linkedin.com/in/omar-alfarouk-252471251/)
+- Email: omaralfarouk646@gmail.com
